@@ -1,0 +1,98 @@
+create database bd_clientes;
+
+create table tbl_clientes (
+	codigo int not null primary key auto_increment,
+    nome varchar(40) not null,
+	sexo char(1) not null
+);
+
+ insert into tbl_clientes (nome,sexo)
+ values ("Breno Bidon", "M"), ("Gabi Portilho", "F"), ("Yuri Alberto", "M");
+ 
+ select * from tbl_clientes;
+
+
+#EXEMPLO 1 STORED PROCEDURE
+ DELIMITER $$
+ create procedure sp_lista_clientes(in opcao int)
+ begin
+	if opcao = 0 then #se a opcao for 0
+		select * from tbl_clientes where sexo = 'F'; #vai chamar todos os do sexo feminino
+	elseif opcao = 1 then #se a opcao for 1
+		select * from tbl_clientes where sexo = 'M'; #vai chamar todos os do sexo masculino
+	else #se nao for nenhum dos dois 
+		select * from tbl_clientes; #vai chamar os dois sexos
+	end if;
+end $$
+DELIMITER ;
+
+show procedure status;
+
+#lista sexo feminino:
+call sp_lista_clientes(0);
+#lista sexo masculino:
+call sp_lista_clientes(1);
+#lista todos:
+call sp_lista_clientes(2);
+
+#EXEMPLO 2 STORED PROCEDURE
+DELIMITER $$
+
+create procedure sp_busca_cliente_por_nome(in nome_parcial varchar(100))
+begin
+	select * from tbl_clientes
+    where nome like concat ('%', nome_parcial, '%');
+end $$
+
+DELIMITER ;
+
+show procedure status;
+
+#lista dos nomes com a letra a:
+call sp_busca_cliente_por_nome('a'); 
+#lista dos nomes com a letra o:
+call sp_busca_cliente_por_nome('o');
+
+
+
+#ATIVIDADE 1
+
+create table tbl_clientes2 (
+	id int not null primary key auto_increment,
+    nome varchar(100) not null,
+    idade int not null,
+    sexo char(1) not null,
+    email varchar(100) not null,
+    telefone varchar(15) not null,
+    endereco varchar(255) not null
+);
+
+insert into tbl_clientes2 (nome, idade, sexo, email, telefone, endereco) 
+values ('João Silva', 23, 'M', 'joao.silva@example.com', '11987654321', 'Rua A, 123, São Paulo'),
+	   ('Maria Oliveira', 15, 'F', 'maria.oliveira@example.com', '21987654321', 'Avenida B, 456, Rio de Janeiro'),
+	   ('Carlos Souza', 22, 'M', 'carlos.souza@example.com', '31987654321', 'Rua C, 789, Belo Horizonte'),
+	   ('Ana Lima', 12, 'F', 'ana.lima@example.com', '41987654321', 'Travessa D, 101, Porto Alegre'),
+	   ('Lucas Pereira', 19, 'M', 'lucas.pereira@example.com', '51987654321', 'Alameda E, 202, Curitiba');
+       
+       
+DELIMITER $$
+ create procedure sp_lista_clientes_idade (in opcao int)
+ begin
+	if opcao = 0 then #se a opcao for 0
+		select * from tbl_clientes2 where idade <= '18'; #vai chamar todos com a idade menor que 18
+	elseif opcao = 1 then #se a opcao for 1
+		select * from tbl_clientes2 where idade >= '18'; #vai chamar todos com a idade maior que 18
+	else #se nao for nenhum dos dois 
+		select * from tbl_clientes2; #vai chamar todos
+	end if;
+end $$
+DELIMITER ;
+
+show procedure status;
+
+#lista das menores de idade:
+call sp_lista_clientes_idade(0);
+#lista das maiores de idade:
+call sp_lista_clientes_idade(1);
+#lista de todos:
+call sp_lista_clientes_idade(2);
